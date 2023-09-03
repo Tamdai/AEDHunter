@@ -23,7 +23,7 @@ function App() {
         confirmButtonText: "OK",
       });
     } else {
-      () => setIsLoading(true);
+      setIsLoading(true);
     }
   };
 
