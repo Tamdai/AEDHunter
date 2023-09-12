@@ -203,7 +203,7 @@ function Homepage() {
                           isDisable={position.length < 3 ? false : true}
                         />
                         <CheckboxItem
-                          label="สนามบิน1"
+                          label="สนามบิน"
                           onChange={addPosition}
                           isDisable={position.length < 3 ? false : true}
                         />
