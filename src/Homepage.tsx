@@ -23,7 +23,7 @@ function Homepage() {
   const [tempLocation, setTempLocation] = useState<string>("");
   const [average, setAverage] = useState<number>(0);
   const [max, setMax] = useState<number>(0);
-  const [result, setResult] = useState<ResultDataType[]>([]);
+  const [, setResult] = useState<ResultDataType[]>([]);
   const [isResultPage, setIsResultPage] = useState<boolean>(false);
   const [keywordResult, setKeywordResult] = useState<string[]>([]);
 
