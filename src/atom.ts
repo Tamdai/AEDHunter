@@ -9,3 +9,8 @@ export const locationAtom = atom<string[]>({
   key: "locationAtom",
   default: [],
 });
+
+export const keywordsAtom = atom<string[]>({
+  key: "keywordsAtom",
+  default: [],
+});
