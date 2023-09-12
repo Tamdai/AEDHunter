@@ -64,16 +64,20 @@ function Homepage() {
           })
         );
 
-        const response = await fetch("http://localhost:3000/results", {
-          method: "POST",
-          body: JSON.stringify({
-            keywods: kw,
-            quantity: imgNumber ?? 5,
-          }),
-          headers: {
-            "Content-type": "application/json; charset=UTF-8",
-          },
-        });
+        // const response = await fetch("http://localhost:3000/results", {
+        const response = await fetch(
+          "https://asia-east2-aed-bot-backend.cloudfunctions.net/aedserver/results",
+          {
+            method: "POST",
+            body: JSON.stringify({
+              keywods: kw,
+              quantity: imgNumber ?? 5,
+            }),
+            headers: {
+              "Content-type": "application/json; charset=UTF-8",
+            },
+          }
+        );
         const result: ResultType = await response.json();
 
         if (result.data && result.data.items.length > 0) {
