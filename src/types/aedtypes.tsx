@@ -23,11 +23,12 @@ export type ResultType = {
     average: string;
     items: ResultDataType[];
     max: number;
-    keywods: string[];
+    keywords: string[];
   };
   message: string;
 };
 
 export type ResultDataType = {
-  items: { image: string; weight: number };
+  image: string;
+  weight: number;
 };

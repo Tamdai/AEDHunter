@@ -23,7 +23,7 @@ function Homepage() {
   const [tempLocation, setTempLocation] = useState<string>("");
   const [average, setAverage] = useState<number>(0);
   const [max, setMax] = useState<number>(0);
-  const [, setResult] = useState<ResultDataType[]>([]);
+  const [result, setResult] = useState<ResultDataType[]>([]);
   const [isResultPage, setIsResultPage] = useState<boolean>(false);
   const [keywordResult, setKeywordResult] = useState<string[]>([]);
 
@@ -55,12 +55,12 @@ function Homepage() {
       const kw: string[] = [];
 
       if (position.length > 0 && location.length > 0) {
-        const data: string[] = [];
+        // const data: string[] = [];
 
         position.map((p) =>
           location.map((l) => {
-            data.push(`เครื่องกระตุกหัวใจไฟฟ้า AED ${p}${l}`);
-            kw.push(`เครื่องกระตุกหัวใจไฟฟ้า AED ${p}${l}`);
+            // data.push(`เครื่องกระตุกหัวใจไฟฟ้า AED ${p}${l}`);
+            kw.push(`${p}${l}`);
           })
         );
 
@@ -70,7 +70,7 @@ function Homepage() {
           {
             method: "POST",
             body: JSON.stringify({
-              keywods: kw,
+              keywords: kw,
               quantity: imgNumber ?? 5,
             }),
             headers: {
@@ -79,13 +79,14 @@ function Homepage() {
           }
         );
         const result: ResultType = await response.json();
+        console.log("result: ", result.data);
 
         if (result.data && result.data.items.length > 0) {
           setMax(result.data.max);
           setAverage(parseFloat(result.data.average));
           setResult([...result.data.items]);
           setIsResultPage(true);
-          setKeywordResult([...result.data.keywods]);
+          setKeywordResult([...result.data.keywords]);
         }
         setIsLoading(false);
       }
@@ -364,6 +365,17 @@ function Homepage() {
                         <div className="text-sm">Click Export Data</div>
                         <GrDocumentCsv size={20} />
                         <AiOutlinePicture size={20} />
+                      </div>
+                      <div className="flex flex-row gap-3 my-3 text-sm">
+                        {isResultPage &&
+                          result.length > 0 &&
+                          result.map((item, idx) => (
+                            <a
+                              href={item.image}
+                              target="_blank"
+                              key={idx}
+                            >{`Link${idx + 1}`}</a>
+                          ))}
                       </div>
                     </div>
                   </div>
