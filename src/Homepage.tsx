@@ -13,6 +13,7 @@ import Swal from "sweetalert2";
 import { ResultDataType, ResultType } from "./types/aedtypes";
 import { FiUpload } from "react-icons/fi";
 import { GrDocumentCsv } from "react-icons/gr";
+// import { CSVLink, CSVDownload } from "react-csv";
 
 function Homepage() {
   const [position, setPosition] = useState<string[]>([]);
@@ -358,9 +359,10 @@ function Homepage() {
                   <div className="text-center">
                     <div className="flex flex-col w-full">
                       <button className="text-red1 font-bold text-lg bg-white rounded-2xl px-10 py-2 flex justify-center items-center">
-                        <div className="mr-3">Export File.</div>
+                        <div className="mr-3">Export CSV File.</div>
                         <FiUpload />
                       </button>
+
                       <div className="flex flex-row items-center gap-2 mt-2">
                         <div className="text-sm">Click Export Data</div>
                         <GrDocumentCsv size={20} />
