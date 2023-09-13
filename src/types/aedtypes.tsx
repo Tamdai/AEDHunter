@@ -31,4 +31,5 @@ export type ResultType = {
 export type ResultDataType = {
   image: string;
   weight: number;
+  source: string;
 };

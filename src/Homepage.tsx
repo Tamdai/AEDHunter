@@ -13,7 +13,7 @@ import Swal from "sweetalert2";
 import { ResultDataType, ResultType } from "./types/aedtypes";
 import { FiUpload } from "react-icons/fi";
 import { GrDocumentCsv } from "react-icons/gr";
-// import { CSVLink, CSVDownload } from "react-csv";
+import Papa from "papaparse";
 
 function Homepage() {
   const [position, setPosition] = useState<string[]>([]);
@@ -27,6 +27,35 @@ function Homepage() {
   const [result, setResult] = useState<ResultDataType[]>([]);
   const [isResultPage, setIsResultPage] = useState<boolean>(false);
   const [keywordResult, setKeywordResult] = useState<string[]>([]);
+
+  const download = () => {
+    let csvData = [];
+    if (result.length > 0) {
+      const loopData = result.map((item, idx) => {
+        return {
+          "Picture ID": idx + 1,
+          Reference: "",
+          Accuracy: item.weight,
+          "Last TIme": update,
+          Link: item.source,
+        };
+      });
+
+      csvData = loopData;
+      const exportedData = Papa.unparse(csvData);
+      exportData(exportedData, "data.csv", "text/csv;charset=utf-8;");
+    }
+  };
+
+  const exportData = (data: string, fileName: string, type: string) => {
+    const blob = new Blob([data], { type });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = fileName;
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
 
   const handleReset = () => {
     setPosition([]);
@@ -358,7 +387,10 @@ function Homepage() {
                 {isResultPage && (
                   <div className="text-center">
                     <div className="flex flex-col w-full">
-                      <button className="text-red1 font-bold text-lg bg-white rounded-2xl px-10 py-2 flex justify-center items-center">
+                      <button
+                        className="text-red1 font-bold text-lg bg-white rounded-2xl px-10 py-2 flex justify-center items-center"
+                        onClick={download}
+                      >
                         <div className="mr-3">Export CSV File.</div>
                         <FiUpload />
                       </button>
