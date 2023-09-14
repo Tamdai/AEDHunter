@@ -400,7 +400,7 @@ function Homepage() {
                         <GrDocumentCsv size={20} />
                         <AiOutlinePicture size={20} />
                       </div>
-                      <div className="flex flex-row gap-3 my-3 text-sm">
+                      <div className="flex flex-row gap-3 my-3 text-sm flex-wrap">
                         {isResultPage &&
                           result.length > 0 &&
                           result.map((item, idx) => (
