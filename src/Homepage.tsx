@@ -95,7 +95,7 @@ function Homepage() {
 
         if (kw.length >= 0) {
           try {
-            const response = await axios.post("http://127.0.0.1:8000/search", {
+            const response = await axios.post(import.meta.env.VITE_API_URL, {
               kw: kw,
               num: imgNumber,
             });
@@ -106,10 +106,8 @@ function Homepage() {
               .sort((a: ResponseDataType, b: ResponseDataType) =>
                 a.confidence > b.confidence ? -1 : 1
               );
-            console.log("allData: ", allData);
 
             const resultData = allData.slice(0, imgNumber);
-            console.log("resultData: ", resultData);
             let sum = 0;
             for (let i = 0; i < resultData.length; i++) {
               sum += resultData[i].confidence;
@@ -119,12 +117,16 @@ function Homepage() {
             // const avg = sum / imgNumber;
             // const totalMax = resultData[0].confidence;
 
+            const newKws = result.keywords.map((item) =>
+              item.replace("AED เครื่องกระตุกหัวใจไฟฟ้า ", "")
+            );
+
             if (result && resultData.length > 0) {
               setMax(totalMax);
               setAverage(avg);
               setResult([...resultData]);
               setIsResultPage(true);
-              setKeywordResult(result.keywords);
+              setKeywordResult(newKws);
             }
 
             setIsLoading(false);
