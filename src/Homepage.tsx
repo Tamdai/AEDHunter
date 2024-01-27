@@ -10,10 +10,11 @@ import RadioItem from "./components/RadioItem";
 import { TbExternalLink } from "react-icons/tb";
 import { TfiMapAlt } from "react-icons/tfi";
 import Swal from "sweetalert2";
-import { ResultDataType, ResultType } from "./types/aedtypes";
+import { ResponseDataType, ResponseType } from "./types/aedtypes";
 import { FiUpload } from "react-icons/fi";
 import { GrDocumentCsv } from "react-icons/gr";
 import Papa from "papaparse";
+import axios from "axios";
 
 function Homepage() {
   const [position, setPosition] = useState<string[]>([]);
@@ -24,9 +25,10 @@ function Homepage() {
   const [tempLocation, setTempLocation] = useState<string>("");
   const [average, setAverage] = useState<number>(0);
   const [max, setMax] = useState<number>(0);
-  const [result, setResult] = useState<ResultDataType[]>([]);
+  const [result, setResult] = useState<ResponseDataType[]>([]);
   const [isResultPage, setIsResultPage] = useState<boolean>(false);
   const [keywordResult, setKeywordResult] = useState<string[]>([]);
+  // const [keywordResult, setKeywordResult] = useState<string>("");
 
   const download = () => {
     let csvData = [];
@@ -34,10 +36,10 @@ function Homepage() {
       const loopData = result.map((item, idx) => {
         return {
           "Picture ID": idx + 1,
-          Reference: "",
-          Accuracy: item.weight,
-          "Last TIme": update,
-          Link: item.source,
+          Reference: item.keyword,
+          Accuracy: item.confidence,
+          "Last Time": "Anytime",
+          Link: item.link,
         };
       });
 
@@ -85,42 +87,67 @@ function Homepage() {
       const kw: string[] = [];
 
       if (position.length > 0 && location.length > 0) {
-        // const data: string[] = [];
-
         position.map((p) =>
           location.map((l) => {
-            // data.push(`เครื่องกระตุกหัวใจไฟฟ้า AED ${p}${l}`);
-            kw.push(`${p}${l}`);
+            kw.push(`AED เครื่องกระตุกหัวใจไฟฟ้า ${p}${l}`);
           })
         );
 
-        // const response = await fetch("http://localhost:3000/results", {
-        const response = await fetch(
-          "https://asia-east2-aed-bot-backend.cloudfunctions.net/aedserver/results",
-          {
-            method: "POST",
-            body: JSON.stringify({
-              keywords: kw,
-              quantity: imgNumber ?? 5,
-            }),
-            headers: {
-              "Content-type": "application/json; charset=UTF-8",
-            },
-          }
-        );
-        const result: ResultType = await response.json();
-        console.log("result: ", result.data);
+        if (kw.length >= 0) {
+          try {
+            const response = await axios.post("http://127.0.0.1:8000/search", {
+              kw: kw,
+              num: imgNumber,
+            });
+            const result: ResponseType = response.data;
 
-        if (result.data && result.data.items.length > 0) {
-          setMax(result.data.max);
-          setAverage(parseFloat(result.data.average));
-          setResult([...result.data.items]);
-          setIsResultPage(true);
-          setKeywordResult([...result.data.keywords]);
+            const allData = result.all_data
+              .flat()
+              .sort((a: ResponseDataType, b: ResponseDataType) =>
+                a.confidence > b.confidence ? -1 : 1
+              );
+            console.log("allData: ", allData);
+
+            const resultData = allData.slice(0, imgNumber);
+            console.log("resultData: ", resultData);
+            let sum = 0;
+            for (let i = 0; i < resultData.length; i++) {
+              sum += resultData[i].confidence;
+            }
+            const avg = (sum / imgNumber) * 100;
+            const totalMax = resultData[0].confidence * 100;
+            // const avg = sum / imgNumber;
+            // const totalMax = resultData[0].confidence;
+
+            if (result && resultData.length > 0) {
+              setMax(totalMax);
+              setAverage(avg);
+              setResult([...resultData]);
+              setIsResultPage(true);
+              setKeywordResult(result.keywords);
+            }
+
+            setIsLoading(false);
+          } catch (error) {
+            console.log(error);
+            setIsLoading(false);
+            Swal.fire({
+              title: "Error!",
+              text: "Please cannot get the data from api",
+              icon: "error",
+              confirmButtonText: "OK",
+            });
+          }
         }
-        setIsLoading(false);
       }
     }
+  };
+
+  const handleOpenImage = (item: ResponseDataType) => {
+    const image = new Image();
+    image.src = "data:image/jpg;base64," + item.base64;
+    const w = window.open("");
+    w?.document.write(image.outerHTML);
   };
 
   const addPosition = (label: string) => {
@@ -385,7 +412,7 @@ function Homepage() {
 
                 {/* export */}
                 {isResultPage && (
-                  <div className="text-center">
+                  <div className="text-center mx-3 md:mx-0">
                     <div className="flex flex-col w-full">
                       <button
                         className="text-red1 font-bold text-lg bg-white rounded-2xl px-10 py-2 flex justify-center items-center"
@@ -404,11 +431,22 @@ function Homepage() {
                         {isResultPage &&
                           result.length > 0 &&
                           result.map((item, idx) => (
-                            <a
-                              href={item.image}
-                              target="_blank"
+                            <span
+                              onClick={() => handleOpenImage(item)}
                               key={idx}
-                            >{`Link${idx + 1}`}</a>
+                              className="cursor-pointer"
+                            >
+                              Link
+                            </span>
+                            // <img
+                            //   src={`data:image/png;base64, ${item.base64}`}
+                            //   alt={item.title}
+                            // />
+                            // <a
+                            //   // href={item.image}
+                            //   target="_blank"
+                            //   key={idx}
+                            // >{`Link${idx + 1}`}</a>
                           ))}
                       </div>
                     </div>
@@ -417,7 +455,7 @@ function Homepage() {
 
                 {/* cancel */}
                 {isResultPage && (
-                  <div className="text-center">
+                  <div className="text-center mx-3 md:mx-0">
                     <div className="flex flex-col w-full">
                       <button
                         className="text-red1 font-bold text-lg bg-white rounded-2xl px-10 py-2 flex justify-center items-center cursor:pointer"

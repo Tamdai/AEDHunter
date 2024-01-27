@@ -18,18 +18,21 @@ export type ImageItem = {
   position: number;
 };
 
-export type ResultType = {
-  data: {
-    average: string;
-    items: ResultDataType[];
-    max: number;
-    keywords: string[];
-  };
-  message: string;
+export type ResponseType = {
+  all_data: ResponseDataType[];
+  max: number;
+  keywords: string[];
 };
 
-export type ResultDataType = {
-  image: string;
-  weight: number;
+export type ResponseDataType = {
+  url: string;
+  confidence: number;
+  title: string;
   source: string;
+  domain: string;
+  link: string;
+  google_url: string;
+  position: number;
+  base64: string;
+  keyword: string;
 };
