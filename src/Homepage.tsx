@@ -112,10 +112,10 @@ function Homepage() {
             for (let i = 0; i < resultData.length; i++) {
               sum += resultData[i].confidence;
             }
-            const avg = (sum / imgNumber) * 100;
-            const totalMax = resultData[0].confidence * 100;
-            // const avg = sum / imgNumber;
-            // const totalMax = resultData[0].confidence;
+
+            const avg = parseFloat((sum / imgNumber).toFixed(2)) * 100;
+            const totalMax =
+              parseFloat(resultData[0].confidence.toFixed(2)) * 100;
 
             const newKws = result.keywords.map((item) =>
               item.replace("AED เครื่องกระตุกหัวใจไฟฟ้า ", "")
